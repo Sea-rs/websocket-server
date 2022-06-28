@@ -1,4 +1,17 @@
 let server = require("ws").Server;
+let fs = require("fs");
+
+let dateDir = new Date();
+dateDir = dateDir.getMonth() + 1 + '_' + dateDir.getDate();
+
+let logFilePath = './log/' + dateDir;
+let chatLogFileName = 'chat.log';
+let reactionLogFileName = 'reaction.log';
+
+if (!fs.existsSync(logFilePath)) {
+    fs.mkdirSync(logFilePath);
+}
+
 let chatServerPort = 5000;
 let reactionServerPort = 5001;
 
@@ -8,17 +21,18 @@ let reactionServerInstance = new server({port: reactionServerPort});
 chatServerInstance.on("connection", (ws) => {
     ws.on("message", (msg) => {
         chatServerInstance.clients.forEach((client) => {
-            // let timeHours = new Date().getHours().toString(10).padStart(2, '0');
-            // let timeMinutes = new Date().getMinutes().toString(10).padStart(2, '0');
-            // let timeSeconds = new Date().getSeconds().toString(10).padStart(2, '0');
-
-            // console.log("send: " + msg + ':' + timeHours + ':' + timeMinutes + ':' + timeSeconds);
             let message = msg.toString();
             let regex = /^\n/gm;
 
             message = message.replace(regex, '');
 
-            console.log('send: ' + message);
+            let chatLog = getServerDate() + ': ' + message + "\n";
+
+            fs.appendFile(logFilePath + '/' + chatLogFileName, chatLog, (err, data) => {
+                if (err) {
+                    console.log(err);
+                }
+            });
 
             client.send(message);
         });
@@ -32,7 +46,13 @@ chatServerInstance.on("connection", (ws) => {
 reactionServerInstance.on("connection", (ws) => {
     ws.on("message", (msg) => {
         reactionServerInstance.clients.forEach((client) => {
-            console.log("send: " + msg);
+            let reactionLog = getServerDate() + ': ' + message + "\n";
+
+            fs.appendFile(logFilePath + '/' + chatLogFileName, reactionLog, (err, data) => {
+                if (err) {
+                    console.log(err);
+                }
+            });
 
             client.send(msg.toString());
         });
@@ -42,3 +62,13 @@ reactionServerInstance.on("connection", (ws) => {
         console.log("リアクションサーバーを切断：");
     })
 });
+
+function getServerDate() {
+    let date = new Date();
+
+    let timeHours = date.getHours().toString(10).padStart(2, '0');
+    let timeMinutes = date.getMinutes().toString(10).padStart(2, '0');
+    let timeSeconds = date.getSeconds().toString(10).padStart(2, '0');
+
+    return timeHours + ':' + timeMinutes + ':' + timeSeconds;
+}

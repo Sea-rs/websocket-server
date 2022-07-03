@@ -48,7 +48,7 @@ reactionServerInstance.on("connection", (ws) => {
         reactionServerInstance.clients.forEach((client) => {
             let reactionLog = getServerDate() + ': ' + msg + "\n";
 
-            fs.appendFile(logFilePath + '/' + chatLogFileName, reactionLog, (err) => {
+            fs.appendFile(logFilePath + '/' + reactionLogFileName, reactionLog, (err) => {
                 if (err) {
                     console.log(err);
                 }

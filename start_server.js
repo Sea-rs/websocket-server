@@ -28,7 +28,7 @@ chatServerInstance.on("connection", (ws) => {
 
             let chatLog = getServerDate() + ': ' + message + "\n";
 
-            fs.appendFile(logFilePath + '/' + chatLogFileName, chatLog, (err, data) => {
+            fs.appendFile(logFilePath + '/' + chatLogFileName, chatLog, (err) => {
                 if (err) {
                     console.log(err);
                 }
@@ -46,9 +46,9 @@ chatServerInstance.on("connection", (ws) => {
 reactionServerInstance.on("connection", (ws) => {
     ws.on("message", (msg) => {
         reactionServerInstance.clients.forEach((client) => {
-            let reactionLog = getServerDate() + ': ' + message + "\n";
+            let reactionLog = getServerDate() + ': ' + msg + "\n";
 
-            fs.appendFile(logFilePath + '/' + chatLogFileName, reactionLog, (err, data) => {
+            fs.appendFile(logFilePath + '/' + chatLogFileName, reactionLog, (err) => {
                 if (err) {
                     console.log(err);
                 }

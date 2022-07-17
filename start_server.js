@@ -1,5 +1,5 @@
-let server = require("ws").Server;
-let fs = require("fs");
+let server = require('ws').Server;
+let fs = require('fs');
 
 let dateDir = new Date();
 dateDir = dateDir.getMonth() + 1 + '_' + dateDir.getDate();
@@ -18,8 +18,8 @@ let reactionServerPort = 5001;
 let chatServerInstance = new server({port: chatServerPort});
 let reactionServerInstance = new server({port: reactionServerPort});
 
-chatServerInstance.on("connection", (ws) => {
-    ws.on("message", (msg) => {
+chatServerInstance.on('connection', (ws) => {
+    ws.on('message', (msg) => {
         chatServerInstance.clients.forEach((client) => {
             let message = msg.toString();
             let regex = /^\n/gm;
@@ -38,13 +38,13 @@ chatServerInstance.on("connection", (ws) => {
         });
     });
 
-    ws.on("close", () => {
+    ws.on('close', () => {
         console.log("チャットサーバーを切断：");
-    })
+    });
 });
 
-reactionServerInstance.on("connection", (ws) => {
-    ws.on("message", (msg) => {
+reactionServerInstance.on('connection', (ws) => {
+    ws.on('message', (msg) => {
         reactionServerInstance.clients.forEach((client) => {
             let reactionLog = getServerDate() + ': ' + msg + "\n";
 
@@ -58,9 +58,9 @@ reactionServerInstance.on("connection", (ws) => {
         });
     });
 
-    ws.on("close", () => {
-        console.log("リアクションサーバーを切断：");
-    })
+    ws.on('close', () => {
+        console.log('リアクションサーバーを切断：');
+    });
 });
 
 function getServerDate() {

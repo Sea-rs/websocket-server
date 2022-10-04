@@ -1,5 +1,6 @@
 let server = require('ws').Server;
 let fs = require('fs');
+let fetch = require('node-fetch');
 
 let dateDir = new Date();
 dateDir = dateDir.getMonth() + 1 + '_' + dateDir.getDate();
@@ -14,9 +15,11 @@ if (!fs.existsSync(logFilePath)) {
 
 let chatServerPort = 5000;
 let reactionServerPort = 5001;
+let info = 5002;
 
 let chatServerInstance = new server({port: chatServerPort});
 let reactionServerInstance = new server({port: reactionServerPort});
+let infoInstance = new server({port: info});
 
 chatServerInstance.on('connection', (ws) => {
     ws.on('message', (msg) => {
@@ -60,6 +63,32 @@ reactionServerInstance.on('connection', (ws) => {
 
     ws.on('close', () => {
         console.log('リアクションサーバーを切断：');
+    });
+});
+
+/**
+ * jsonをdb代わりに使う
+ */
+
+// 環境ごとに変える
+let dbPath = './db/';
+let infoDb = 'info_db.json';
+let dbURL = dbPath + infoDb;
+
+infoInstance.on('connection', (ws) => {
+    ws.on('message', (msg) => {
+        infoInstance.clients.forEach((client) => {
+
+            let info = msg.toString();
+
+            fs.writeFile(dbURL, info, (err) => {
+                if (err) {
+                    console.log(err);
+                }
+            });
+
+            client.send(info);
+        });
     });
 });
 
